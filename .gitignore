@@ -1,0 +1,5 @@
+.env
+__pycache__
+venv/
+migrations
+# Install all packages from requiremnt file, check command in terminal previous ones
