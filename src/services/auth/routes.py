@@ -199,7 +199,7 @@ async def revoke_token(token_details: dict = Depends(AccessTokenBearer())):
 
 
 @auth_router.post("/password-reset-request")
-async def password_reset_request(email_data: PasswordResetRequestModel):
+async def password_rest_request(email_data: PasswordResetRequestModel):
     email = email_data.email
 
     token = create_url_safe_token({"email": email})
@@ -208,52 +208,44 @@ async def password_reset_request(email_data: PasswordResetRequestModel):
 
     html_message = f"""
     <h1>Reset Your Password</h1>
-    <p>Please click this <a href="{link}">link</a> to Reset Your Password</p>
+    <p>Please click this <a href="{link}">link</a> to verify your email</p>
     """
-    subject = "Reset Your Password"
 
-    send_email.delay([email], subject, html_message)
+    message = create_message(
+        recipients=[email], subject="Reset Your Password", body=html_message
+    )
+    await mail.send_message(message)
+
     return JSONResponse(
         content={
-            "message": "Please check your email for instructions to reset your password",
-        },
-        status_code=status.HTTP_200_OK,
-    )
+        "message": "Please check your email for instructions to reset your password",
+    }, status_code=status.HTTP_200_OK)
 
 
-@auth_router.post("/password-reset-confirm/{token}")
-async def reset_account_password(
-    token: str,
-    passwords: PasswordResetConfirmModel,
-    session: AsyncSession = Depends(get_session),
-):
-    new_password = passwords.new_password
-    confirm_password = passwords.confirm_new_password
-
-    if new_password != confirm_password:
-        raise HTTPException(
-            detail="Passwords do not match", status_code=status.HTTP_400_BAD_REQUEST
-        )
-
+@auth_router.get("/password-reset-confirm/{token}")
+async def reset_account_password(token: str, password: PasswordResetConfirmModel, session: AsyncSession = Depends(get_session)):
+    new_password = password.new_password
+    confirm_new_password = password.confirm_new_password
+    if new_password != confirm_new_password:
+        raise HTTPException(detail="Password do not match!", status_code=status.HTTP_400_BAD_REQUEST)
+    
     token_data = decode_url_safe_token(token)
-
     user_email = token_data.get("email")
-
     if user_email:
         user = await user_service.get_user_by_email(user_email, session)
-
         if not user:
             raise UserNotFound()
-
-        passwd_hash = generate_passwd_hash(new_password)
-        await user_service.update_user(user, {"password_hash": passwd_hash}, session)
-
+        password_hash = generate_passwd_hash(new_password)
+        await user_service.update_user(user, {"password": password_hash}, session)
         return JSONResponse(
-            content={"message": "Password reset Successfully"},
+            content={
+                "message": "Password Reset Sucessfully",
+            },
             status_code=status.HTTP_200_OK,
         )
-
     return JSONResponse(
-        content={"message": "Error occured during password reset."},
-        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={
+            "message": "Error occurred during password reset",
+        },
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
     )
