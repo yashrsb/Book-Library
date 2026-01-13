@@ -222,7 +222,7 @@ async def password_rest_request(email_data: PasswordResetRequestModel):
     }, status_code=status.HTTP_200_OK)
 
 
-@auth_router.get("/password-reset-confirm/{token}")
+@auth_router.post("/password-reset-confirm/{token}")
 async def reset_account_password(token: str, password: PasswordResetConfirmModel, session: AsyncSession = Depends(get_session)):
     new_password = password.new_password
     confirm_new_password = password.confirm_new_password
