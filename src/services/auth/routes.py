@@ -98,7 +98,7 @@ async def create_user_Account(
     message = create_message(
         recipients=[email], subject="Verify your email", body=html_message
     )
-    await mail.send_message(message)
+    bg_tasks.add_task(mail.send_message,message)
 
     return {
         "message": "Account Created! Check email to verify your account",
@@ -236,7 +236,7 @@ async def reset_account_password(token: str, password: PasswordResetConfirmModel
         if not user:
             raise UserNotFound()
         password_hash = generate_passwd_hash(new_password)
-        await user_service.update_user(user, {"password": password_hash}, session)
+        await user_service.update_user(user, {"password_hash": password_hash}, session)
         return JSONResponse(
             content={
                 "message": "Password Reset Sucessfully",
