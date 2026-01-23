@@ -95,10 +95,6 @@ async def create_user_Account(
     <p>Please click this <a href="{link}">link</a> to verify your email</p>
     """
 
-    message = create_message(
-        recipients=[email], subject="Verify your email", body=html_message
-    )
-    bg_tasks.add_task(mail.send_message,message)
 
     return {
         "message": "Account Created! Check email to verify your account",
