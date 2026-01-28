@@ -38,7 +38,7 @@ from src.errors import (
 )
 from config import Config
 
-# from src.celery_tasks import send_email
+from src.celery_tasks import send_mail
 from src.mail import mail, create_message
 
 auth_router = APIRouter()
@@ -59,10 +59,7 @@ async def send_mail(emails: EmailModel):
     html = "<h1>Welcome to the app</h1>"
     subject = "Welcome to our app"
 
-    message = create_message(emails, subject, html)
-
-    await mail.send_message(message)
-
+    send_mail.delay(emails, subject, html)
     return {"message": "Email sent successfully"}
 
 
@@ -94,8 +91,9 @@ async def create_user_Account(
     <h1>Verify your Email</h1>
     <p>Please click this <a href="{link}">link</a> to verify your email</p>
     """
-
-
+    subject = "Verify Your Email"
+    emails = [email]
+    send_mail.delay(emails, subject, html_message)
     return {
         "message": "Account Created! Check email to verify your account",
         "user": new_user,
