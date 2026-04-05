@@ -52,14 +52,15 @@ REFRESH_TOKEN_EXPIRY = 2
 # Bearer Token
 
 
-@auth_router.post("/send_email")
-async def send_email(emails: EmailModel):
+@auth_router.post("/send_mail")
+async def send_mail(emails: EmailModel):
     emails = emails.addresses
 
     html = "<h1>Welcome to the app</h1>"
     subject = "Welcome to our app"
 
     send_email.delay(emails, subject, html)
+
     return {"message": "Email sent successfully"}
 
 
@@ -87,19 +88,21 @@ async def create_user_Account(
 
     link = f"http://{Config.DOMAIN}/api/v1/auth/verify/{token}"
 
-    html_message = f"""
+    html = f"""
     <h1>Verify your Email</h1>
     <p>Please click this <a href="{link}">link</a> to verify your email</p>
     """
-    subject = "Verify Your Email"
+
     emails = [email]
-    send_email.delay(emails, subject, html_message)
+
+    subject = "Verify Your email"
+
+    send_email.delay(emails, subject, html)
+
     return {
         "message": "Account Created! Check email to verify your account",
         "user": new_user,
     }
-
-
 @auth_router.get("/verify/{token}")
 async def verify_user_account(token: str, session: AsyncSession = Depends(get_session)):
     token_data = decode_url_safe_token(token)

@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     MAIL_SSL_TLS: bool = False
     USE_CREDENTIALS: bool = True
     VALIDATE_CERTS: bool = True
-    DOMAIN: str
+    DOMAIN: str = '127.0.0.1:8000'
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
 

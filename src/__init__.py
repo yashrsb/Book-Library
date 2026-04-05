@@ -20,7 +20,11 @@ app = FastAPI(
     version= version,
     title="Book Library",
     description="A REST API for book library",
-    lifespan=life_span
+    lifespan=life_span,
+    docs_url=f"/api/{version}/docs",
+    contact={
+        "email":"bibij75759@cosdas.com"
+    }
 )
 
 version_prefix =f"/api/{version}"
