@@ -22,6 +22,7 @@ app = FastAPI(
     description="A REST API for book library",
     lifespan=life_span,
     docs_url=f"/api/{version}/docs",
+    redoc_url=f"/api/{version}/redoc",
     contact={
         "email":"bibij75759@cosdas.com"
     }
