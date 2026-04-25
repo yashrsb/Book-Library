@@ -21,6 +21,7 @@ app = FastAPI(
     title="Book Library",
     description="A REST API for book library",
     lifespan=life_span,
+    openapi_url = f"/api/{version}/openapi.json",
     docs_url=f"/api/{version}/docs",
     redoc_url=f"/api/{version}/redoc",
     contact={
