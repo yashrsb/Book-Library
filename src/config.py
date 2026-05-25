@@ -1,7 +1,5 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-
-
 class Settings(BaseSettings):
     DATABASE_URL: str
     JWT_SECRET: str
@@ -22,7 +20,7 @@ class Settings(BaseSettings):
 
 
 Config = Settings()
-
+print("DATABASE_URL:", repr(Config.DATABASE_URL))
 
 broker_url = Config.REDIS_URL
 result_backend = Config.REDIS_URL
